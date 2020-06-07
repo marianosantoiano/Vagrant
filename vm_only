@@ -1,0 +1,10 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "hashicorp/bionic64"
+  config.vm.hostname = "enve-labs-vagrant-ansible-demo"
+  config.vm.network :public_network, bridge: 'en0: Wi-Fi (AirPort)'
+  config.vm.network "forwarded_port", guest: 80, host: 80
+  config.vm.network "forwarded_port", guest: 27017, host: 27017
+  config.vm.provider :virtualbox do |vb|
+    vb.name = "enve-labs-vagrant-ansible-demo"
+  end
+end

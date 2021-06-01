@@ -1,0 +1,29 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  config.vm.define "docker" do |subconfig|
+    subconfig.vm.box = "ubuntu/bionic64"
+    subconfig.vm.hostname = "docker"
+
+    subconfig.vm.provider :virtualbox do |vb|
+      vb.name = "docker"
+    end
+
+    subconfig.vm.network :public_network, bridge: ''
+    subconfig.vm.network "forwarded_port", guest: 18083, host: 18083
+    subconfig.vm.network "forwarded_port", guest: 1883, host: 1883
+
+    subconfig.vm.synced_folder "./", "/home/vagrant/shared"
+
+    subconfig.vm.provision "shell", inline: <<-SHELL
+      sudo apt-get update
+      sudo apt-get install apt-transport-https ca-certificates curl gnupg lsb-release -y
+      curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+      echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+      sudo apt-get update
+      sudo apt-get install docker-ce docker-ce-cli containerd.io -y
+    SHELL
+  end
+ end

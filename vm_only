@@ -1,10 +1,26 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
 Vagrant.configure("2") do |config|
-  config.vm.box = "ubuntu/trusty64"
-  config.vm.hostname = "hostname"
-  config.vm.network :public_network, bridge: 'en0: Wi-Fi (AirPort)'
-  config.vm.network "forwarded_port", guest: 80, host: 80
-  config.vm.network "forwarded_port", guest: 27017, host: 27017
-  config.vm.provider :virtualbox do |vb|
-    vb.name = "vm,name"
+
+  config.vm.define "vm" do |subconfig|
+    subconfig.vm.box = "ubuntu/bionic64"
+    subconfig.vm.hostname = "vm"
+
+    subconfig.vm.provider :virtualbox do |vb|
+      vb.name = "vm"
+    end
+    
+    config.vm.provider:virtualbox do |vb|
+      vb.memory = 2048
+      vb.cpus = 1
+      vb.linked_clone = false
+     end
+
+    subconfig.vm.network :public_network, bridge: ''
+
+    subconfig.vm.synced_folder "./", "/home/vagrant/shared"
+
   end
-end
+ end
+
